@@ -1,0 +1,39 @@
+{
+   "name": "new-typeorm-project",
+   "version": "0.0.1",
+   "description": "Awesome project developed with TypeORM.",
+   "devDependencies": {
+      "@types/bcrypt": "^3.0.0",
+      "@types/jest": "^24.0.19",
+      "@types/node": "^12.7.12",
+      "@types/uuid": "^3.4.5",
+      "gql2ts": "^1.10.1",
+      "jest": "^24.9.0",
+      "nodemon": "^1.19.3",
+      "ts-jest": "^24.1.0",
+      "ts-node": "8.4.1",
+      "tslint": "^5.20.0",
+      "tslint-config-prettier": "^1.18.0",
+      "typescript": "3.6.3"
+   },
+   "dependencies": {
+      "bcrypt": "^3.0.6",
+      "graphql-import": "^0.7.1",
+      "graphql-request": "^1.8.2",
+      "graphql-yoga": "^1.18.3",
+      "pg": "^7.12.1",
+      "reflect-metadata": "^0.1.13",
+      "typeorm": "0.2.19",
+      "uuid": "^3.3.3"
+   },
+   "scripts": {
+      "start": "ts-node --files src/index.ts",
+      "devServer": "nodemon --exec NODE_ENV=development ts-node --files src/index.ts",
+      "testServer": "NODE_ENV=test ts-node --files src/index.ts",
+      "gen-schema-types": "gql2ts src/schema.graphql -o src/types/schema.d.ts",
+      "test": "jest"
+   },
+   "jest": {
+      "preset": "ts-jest"
+   }
+}
