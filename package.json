@@ -23,15 +23,14 @@
       "graphql-yoga": "^1.18.3",
       "pg": "^7.12.1",
       "reflect-metadata": "^0.1.13",
-      "typeorm": "0.2.19",
-      "uuid": "^3.3.3"
+      "typeorm": "0.2.19"
    },
    "scripts": {
       "start": "ts-node --files src/index.ts",
       "devServer": "nodemon --exec NODE_ENV=development ts-node --files src/index.ts",
       "testServer": "NODE_ENV=test ts-node --files src/index.ts",
       "gen-schema-types": "gql2ts src/schema.graphql -o src/types/schema.d.ts",
-      "test": "jest"
+      "test": "NODE_ENV=test jest --forceExit"
    },
    "jest": {
       "preset": "ts-jest"
