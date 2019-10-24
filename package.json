@@ -4,13 +4,16 @@
    "description": "Awesome project developed with TypeORM.",
    "devDependencies": {
       "@types/bcrypt": "^3.0.0",
+      "@types/ioredis": "^4.0.18",
       "@types/jest": "^24.0.19",
       "@types/node": "^12.7.12",
+      "@types/node-fetch": "^2.5.2",
       "@types/uuid": "^3.4.5",
       "@types/yup": "^0.26.24",
       "gql2ts": "^1.10.1",
       "jest": "^24.9.0",
       "nodemon": "^1.19.3",
+      "react-router-dom": "^5.1.2",
       "ts-jest": "^24.1.0",
       "ts-node": "8.4.1",
       "tslint": "^5.20.0",
@@ -22,9 +25,12 @@
       "graphql-import": "^0.7.1",
       "graphql-request": "^1.8.2",
       "graphql-yoga": "^1.18.3",
+      "ioredis": "^4.14.1",
+      "node-fetch": "^2.6.0",
       "pg": "^7.12.1",
       "reflect-metadata": "^0.1.13",
       "typeorm": "0.2.19",
+      "uuid": "^3.3.3",
       "yup": "^0.27.0"
    },
    "scripts": {
@@ -35,6 +41,7 @@
       "test": "NODE_ENV=test jest --forceExit"
    },
    "jest": {
-      "preset": "ts-jest"
+      "preset": "ts-jest",
+      "globalSetup": "./src/testSetup/callSetup.js"
    }
 }
