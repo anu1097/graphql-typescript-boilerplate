@@ -1,0 +1,16 @@
+import { User } from './../entity/User';
+import { redisInstance } from './../redis_utility';
+
+export const confirmEmail = async (req, res) => {
+  const {id} = req.params;
+  const redis = redisInstance
+  const userID = await redis.get(id);
+  if(userID){
+    User.update({id: userID}, {confirmed: true})
+    redis.del(userID);
+    res.send("ok")
+  }
+  else{
+    res.send("UserId invalid")
+  }
+};

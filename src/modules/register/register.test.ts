@@ -1,12 +1,17 @@
-import { createTypeormConnection } from './../../utils/createTypeormConnection';
+import { createTypeormConnection } from './../../utils/utils';
 import { User } from '../../entity/User';
 import { request } from 'graphql-request'
 import { duplicateEmail, emailNotLongEnough, invalidEmail, passwordNotLongEnough } from './errorMessages';
+import { Connection } from 'typeorm';
 
+let conn: Connection
 beforeAll(async () => {
-  await createTypeormConnection();
+  conn = await createTypeormConnection();
 })
 
+afterAll(() => {
+  conn.close();
+})
 
 const mutation = (email: string, password: string) => `
 mutation {
@@ -17,7 +22,7 @@ mutation {
 }
 `
 
-xdescribe("testing registration mutation", () => {
+describe("testing registration mutation", () => {
   const email = "anu@anu.com";
   const password = "anu";
   it('registering a user returns correct response', async () => {
@@ -36,7 +41,7 @@ xdescribe("testing registration mutation", () => {
       path: 'email',
       message: duplicateEmail
     });
-  })
+  });
   it('registering a user with invalid email returns inccorrect response', async () => {
     const response = await request(process.env.TEST_HOST as string, mutation("an", password));
     expect(response.register).toHaveLength(2);

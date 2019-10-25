@@ -38,7 +38,7 @@
       "devServer": "nodemon --exec NODE_ENV=development ts-node --files src/index.ts",
       "testServer": "NODE_ENV=test ts-node --files src/index.ts",
       "gen-schema-types": "gql2ts src/schema.graphql -o src/types/schema.d.ts",
-      "test": "NODE_ENV=test jest --forceExit"
+      "test": "NODE_ENV=test jest --watchAll"
    },
    "jest": {
       "preset": "ts-jest",

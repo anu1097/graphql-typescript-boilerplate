@@ -1,21 +1,26 @@
-import * as Redis from 'ioredis';
+import { redisInstance } from './../redis_utility';
+import { Connection } from 'typeorm';
 import { User } from './../entity/User';
 import { createEmailConfirmationLink } from './utils';
-import { createTypeormConnection } from './createTypeormConnection';
+import { createTypeormConnection } from './utils';
 import fetch from 'node-fetch';
 
 let userId = ""
+let conn: Connection
 
 beforeAll(async () => {
-  await createTypeormConnection();
+  conn = await createTypeormConnection();
   const user = await User.create({
     email: "test@test.com",
     password: "password"
   }).save();
   userId = user.id;
 })
+afterAll(()=>{
+  conn.close();
+})
 
-const redis = new Redis();
+const redis = redisInstance;
 
 describe("tests createConfirmEmail function", () => {
   it("checks if it sends correct response when valid url is hit", async () => {
@@ -30,11 +35,4 @@ describe("tests createConfirmEmail function", () => {
     const id = await redis.get(userId);
     expect(id).toBeNull()
   })
-
-  it("checks if it sends incorrect response when invalid url is hit", async () => {
-    const response = await fetch(`${process.env.TEST_HOST}/confirm/12312312`);
-    const responseText = await response.text();
-    expect(responseText).toEqual("UserId invalid");
-  })
-
 })
