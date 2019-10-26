@@ -21,6 +21,7 @@
       "typescript": "3.6.3"
    },
    "dependencies": {
+      "@gql2ts/from-schema": "^1.10.1",
       "bcrypt": "^3.0.6",
       "graphql-import": "^0.7.1",
       "graphql-request": "^1.8.2",
@@ -37,7 +38,7 @@
       "start": "ts-node --files src/index.ts",
       "devServer": "nodemon --exec NODE_ENV=development ts-node --files src/index.ts",
       "testServer": "NODE_ENV=test ts-node --files src/index.ts",
-      "gen-schema-types": "gql2ts src/schema.graphql -o src/types/schema.d.ts",
+      "gen-schema-types": "ts-node src/scripts/createTypeSchema.ts",
       "test": "NODE_ENV=test jest --watchAll"
    },
    "jest": {
