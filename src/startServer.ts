@@ -4,6 +4,7 @@ import { redisInstance } from './redis_utility';
 import { getPort, generateMergedSchema } from './utils/utils';
 import { createTypeormConnection } from './utils/utils';
 import { GraphQLServer } from 'graphql-yoga';
+import 'dotenv/config';
 
 export const startServer = async () => {
   const redis: Redis = redisInstance;

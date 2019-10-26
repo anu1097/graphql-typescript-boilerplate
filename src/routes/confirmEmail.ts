@@ -7,7 +7,7 @@ export const confirmEmail = async (req, res) => {
   const userID = await redis.get(id);
   if(userID){
     User.update({id: userID}, {confirmed: true})
-    redis.del(userID);
+    await redis.del(id);
     res.send("ok")
   }
   else{
