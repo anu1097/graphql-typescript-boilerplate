@@ -7,15 +7,19 @@ import fetch from 'node-fetch';
 
 let userId = "";
 let confirmationUrl = "";
+let utilsTestConnection: Connection;
 
 beforeAll(async () => {
-  await createTypeormConnection();
+  utilsTestConnection = await createTypeormConnection();
   const user = await User.create({
     email: "testUtil@test.com",
     password: "testUtilPassword"
   }).save();
   userId = user.id;
   confirmationUrl = await createEmailConfirmationLink(process.env.TEST_HOST as string, userId as string, redis);
+})
+afterAll(async () => {
+  utilsTestConnection.close();
 })
 
 const redis = redisInstance;

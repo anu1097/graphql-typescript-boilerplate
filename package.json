@@ -4,6 +4,8 @@
    "description": "Awesome project developed with TypeORM.",
    "devDependencies": {
       "@types/bcrypt": "^3.0.0",
+      "@types/connect-redis": "^0.0.11",
+      "@types/express-session": "^1.15.15",
       "@types/ioredis": "^4.0.18",
       "@types/jest": "^24.0.19",
       "@types/node": "^12.7.12",
@@ -22,14 +24,18 @@
    },
    "dependencies": {
       "@gql2ts/from-schema": "^1.10.1",
+      "axios": "^0.18.0",
       "bcrypt": "^3.0.6",
+      "connect-redis": "^4.0.3",
       "dotenv": "^8.2.0",
+      "express-session": "^1.17.0",
       "graphql-import": "^0.7.1",
       "graphql-request": "^1.8.2",
       "graphql-yoga": "^1.18.3",
       "ioredis": "^4.14.1",
       "node-fetch": "^2.6.0",
       "pg": "^7.12.1",
+      "redis": "^2.8.0",
       "reflect-metadata": "^0.1.13",
       "sparkpost": "^2.1.4",
       "typeorm": "0.2.19",
@@ -40,10 +46,22 @@
       "start": "ts-node --files src/index.ts",
       "devServer": "nodemon --exec NODE_ENV=development ts-node --files src/index.ts",
       "gen-schema-types": "ts-node src/scripts/createTypeSchema.ts",
-      "test": "NODE_ENV=test jest --watchAll"
+      "test": "NODE_ENV=test jest --watchAll --runInBand"
    },
    "jest": {
       "preset": "ts-jest",
-      "globalSetup": "./src/testSetup/callSetup.js"
+      "globalSetup": "./src/testSetup/callSetup.js",
+      "transform": {
+         "^.+\\.tsx?$": "ts-jest"
+       },
+       "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+       "moduleFileExtensions": [
+         "ts",
+         "tsx",
+         "js",
+         "jsx",
+         "json",
+         "node"
+       ]
    }
 }

@@ -2,13 +2,18 @@ import { emailNotLongEnough, invalidEmail, passwordNotLongEnough } from './../..
 import { createTypeormConnection } from './../../utils/utils';
 import { User } from '../../entity/User';
 import { request } from 'graphql-request'
-import { duplicateEmail} from './errorMessages';
+import { duplicateEmail } from './errorMessages';
 import { Connection } from 'typeorm';
 
+let registerTestConnection: Connection
+
 beforeAll(async () => {
- await createTypeormConnection();
+  registerTestConnection = await createTypeormConnection();
 })
 
+afterAll(async () => {
+  registerTestConnection.close();
+})
 const registerMutation = (email: string, password: string) => `
 mutation {
   register(email: "${email}", password: "${password}"){

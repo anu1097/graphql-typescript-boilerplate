@@ -6,8 +6,6 @@ import { ResolverMap } from '../../types/graphql-utils';
 import * as yup from 'yup';
 import { formatYupError } from '../../utils/formatYupError';
 import { GQL } from '../../types/schema';
-import { createEmailConfirmationLink } from './../../utils/utils';
-import { sendConfirmationEmail } from '../../utils/sendConfirmationEmail';
 
 const validSchema = yup.object().shape({
   email: yup.string().min(3).max(255).email(invalidEmail),
@@ -26,8 +24,11 @@ export const resolvers: ResolverMap = {
     bye2: () => "bye"
   },
   Mutation: {
-    login: async (_,
-      args: GQL.ILoginOnMutationArguments) => {
+    login: async (
+      _,
+      args: GQL.ILoginOnMutationArguments,
+      { session }
+    ) => {
       try {
         await validSchema.validate(args, { abortEarly: false })
       } catch (err) {
@@ -45,6 +46,7 @@ export const resolvers: ResolverMap = {
       }
       const valid = await bcrypt.compare(password, user.password);
       if (!valid) return errorResponse(invalidLogin);
+      session.userId = user.id;
       return null;
     }
   }

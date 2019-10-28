@@ -1,3 +1,4 @@
+import { GraphQlMiddleware, Resolver } from './../types/graphql-utils';
 import { v4 } from "uuid";
 import { Redis } from "ioredis";
 import { getConnectionOptions, createConnection } from "typeorm"
@@ -7,10 +8,7 @@ import { GraphQLSchema } from 'graphql';
 import * as path from 'path';
 import * as fs from 'fs';
 
-export const getPort = (): number => {
-  const port = process.env.NODE_ENV === 'test' ? 4001 : 4000;
-  return port;
-}
+export const getPort = (): number => process.env.NODE_ENV === 'test' ? 4001 : 4000;
 
 export const createEmailConfirmationLink = async (url: string, userId: string, redis: Redis) => {
   const uuid = v4();
@@ -36,3 +34,13 @@ export const generateMergedSchema = () => {
   })
   return mergeSchemas({ schemas })
 }
+
+export const createMiddleWare = (
+  middleWare: GraphQlMiddleware,
+  resolverFunc: Resolver
+) => (
+  parent: any,
+  args: any,
+  context: any,
+  info: any
+) => middleWare(resolverFunc, parent, args, context, info);

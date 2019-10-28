@@ -20,6 +20,5 @@ export const sendConfirmationEmail = async (recipientEmail: string, url: string)
       { address: `${recipientEmail}` }
     ]
   })
-  console.log({ response });
   return null;
 }

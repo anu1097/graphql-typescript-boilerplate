@@ -3,14 +3,14 @@ import { redisInstance } from './../redis_utility';
 
 export const confirmEmail = async (req, res) => {
   const {id} = req.params;
-  const redis = redisInstance
+  const redis = redisInstance;
   const userID = await redis.get(id);
   if(userID){
     User.update({id: userID}, {confirmed: true})
     await redis.del(id);
-    res.send("ok")
+    res.send("ok");
   }
   else{
-    res.send("UserId invalid")
+    res.send("UserId invalid");
   }
 };

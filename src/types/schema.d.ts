@@ -23,12 +23,19 @@ column: number;
 interface IQuery {
 __typename: "Query";
 bye2: string | null;
+me: IUser | null;
 bye: string | null;
 hello: string | null;
 }
 
 interface IHelloOnQueryArguments {
 name?: string | null;
+}
+
+interface IUser {
+__typename: "User";
+id: string;
+email: string;
 }
 
 interface IMutation {
