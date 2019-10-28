@@ -44,3 +44,18 @@ export const createMiddleWare = (
   context: any,
   info: any
 ) => middleWare(resolverFunc, parent, args, context, info);
+
+export const middleWare = async (
+  resolver: Resolver,
+  parent: any,
+  args: any,
+  context: any,
+  info: any
+) => {
+  //user not logged in
+  if(!context.session || !context.session.userId){
+    return null;
+  } 
+  const response = await resolver(parent, args, context, info);
+  return response;
+} 

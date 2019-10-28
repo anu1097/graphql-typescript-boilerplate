@@ -1,26 +1,20 @@
-import { User } from './../../entity/User';
-import { request } from 'graphql-request';
+import { User } from '../../entity/User';
 import { createTypeormConnection } from '../../utils/utils';
 import { Connection } from 'typeorm';
 import axios from 'axios';
 
-let meTestConnection: Connection
 let userId = '';
 const email = "loging@test.com";
 const password = "logingTestPassword";
 
 beforeAll(async () => {
-  meTestConnection = await createTypeormConnection();
+  await createTypeormConnection();
   const user = await User.create({
     email,
     password,
     confirmed: true
   }).save();
   userId = user.id;
-})
-
-afterAll(async () => {
-  meTestConnection.close();
 })
 
 const loginMutation = (email: string, password: string) => `
@@ -41,19 +35,15 @@ const meQuery = `
 }
 `;
 
-describe("me tests", () => {
-  test("return null if no coookie", async () => {
-    const response = await axios.post(
-      process.env.TEST_HOST as string,
-      {
-        query: meQuery
-      }
-    );
+const logoutMutation = `
+mutation{
+  logout
+}
+`
 
-    expect(response.data.data).toEqual({ "me": null });
-  })
+describe("logout tests", () => {
 
-  test("get Current User", async () => {
+  test("after logging out a user, me query returns null", async () => {
     await axios.post(
       process.env.TEST_HOST as string,
       {
@@ -63,8 +53,8 @@ describe("me tests", () => {
         withCredentials: true
       }
     )
-  
-  
+
+
     const response = await axios.post(
       process.env.TEST_HOST as string,
       { query: meQuery },
@@ -72,13 +62,32 @@ describe("me tests", () => {
         withCredentials: true
       }
     )
-  
+
     expect(response.data.data).toEqual({
       me: {
         id: userId,
         email
       }
     });
-  })
 
+    await axios.post(
+      process.env.TEST_HOST as string,
+      {
+        query: logoutMutation
+      },
+      {
+        withCredentials: true
+      }
+    )
+
+      const response2 = await axios.post(
+        process.env.TEST_HOST as string,
+        { query: meQuery },
+        {
+          withCredentials: true
+        }
+        )
+
+        expect(response2.data.data.me).toBeNull();
+  })
 })
