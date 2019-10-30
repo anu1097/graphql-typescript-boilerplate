@@ -1,3 +1,4 @@
+import { TestClient } from './../../utils/utils';
 import { User } from './../../entity/User';
 import { request } from 'graphql-request';
 import { createTypeormConnection } from '../../utils/utils';
@@ -23,57 +24,21 @@ afterAll(async () => {
   meTestConnection.close();
 })
 
-const loginMutation = (email: string, password: string) => `
-mutation {
-  login(email: "${email}", password: "${password}"){
-    path
-    message
-  }
-}
-`
-
-const meQuery = `
-{
-  me{
-    id
-    email
-  }
-}
-`;
-
 describe("me tests", () => {
+  const testClient = new TestClient(process.env.TEST_HOST as string);
   test("return null if no coookie", async () => {
-    const response = await axios.post(
-      process.env.TEST_HOST as string,
-      {
-        query: meQuery
-      }
-    );
+    const response = await testClient.meClient();
 
-    expect(response.data.data).toEqual({ "me": null });
+    expect(response.data).toEqual({ "me": null });
   })
 
   test("get Current User", async () => {
-    await axios.post(
-      process.env.TEST_HOST as string,
-      {
-        query: loginMutation(email, password)
-      },
-      {
-        withCredentials: true
-      }
-    )
+    
+    await testClient.loginClient(email, password);
   
+    const response = await testClient.meClient();
   
-    const response = await axios.post(
-      process.env.TEST_HOST as string,
-      { query: meQuery },
-      {
-        withCredentials: true
-      }
-    )
-  
-    expect(response.data.data).toEqual({
+    expect(response.data).toEqual({
       me: {
         id: userId,
         email

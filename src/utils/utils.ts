@@ -7,6 +7,8 @@ import { makeExecutableSchema, mergeSchemas } from 'graphql-tools';
 import { GraphQLSchema } from 'graphql';
 import * as path from 'path';
 import * as fs from 'fs';
+import axios from 'axios';
+import * as rp from 'request-promise';
 
 export const getPort = (): number => process.env.NODE_ENV === 'test' ? 4001 : 4000;
 
@@ -53,9 +55,88 @@ export const middleWare = async (
   info: any
 ) => {
   //user not logged in
-  if(!context.session || !context.session.userId){
+  if (!context.session || !context.session.userId) {
     return null;
-  } 
+  }
   const response = await resolver(parent, args, context, info);
   return response;
-} 
+}
+
+export class TestClient {
+  private url: string;
+  private options: {
+    jar: any,
+    withCredentials: any,
+    json: boolean
+  }
+  private mutation = (mutationName: string, email: string, password: string) => `
+  mutation {
+    ${mutationName}(email: "${email}", password: "${password}"){
+      path
+      message
+    }
+  }
+  `
+
+  private meQuery = `
+  {
+    me{
+      id
+      email
+    }
+  }
+  `;
+
+  private logoutMutation = `
+  mutation{
+    logout
+  }
+  `
+  constructor(url: string) {
+    this.url = url;
+    this.options = {
+      jar: rp.jar(),
+      withCredentials: true,
+      json: true
+    }
+  }
+
+  loginClient = async (email, password) => {
+    return rp.post(this.url, {
+      ...this.options,
+      body:
+      {
+        query: this.mutation("login", email, password)
+      }
+    })
+  }
+  registerClient = async (email, password) => {
+    return rp.post(this.url, {
+      ...this.options,
+      body:
+      {
+        query: this.mutation("register", email, password)
+      }
+    })
+  }
+
+  logoutClient = async () => {
+    return rp.post(this.url, {
+      ...this.options,
+      body:
+      {
+        query: this.logoutMutation
+      }
+    })
+  }
+
+  meClient = async () => {
+    return rp.post(this.url, {
+      ...this.options,
+      body:
+      {
+        query: this.meQuery
+      }
+    })
+  }
+}

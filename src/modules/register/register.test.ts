@@ -1,5 +1,5 @@
 import { emailNotLongEnough, invalidEmail, passwordNotLongEnough } from './../../utils/commonErrors';
-import { createTypeormConnection } from './../../utils/utils';
+import { createTypeormConnection, TestClient } from './../../utils/utils';
 import { User } from '../../entity/User';
 import { request } from 'graphql-request'
 import { duplicateEmail } from './errorMessages';
@@ -14,21 +14,14 @@ beforeAll(async () => {
 afterAll(async () => {
   registerTestConnection.close();
 })
-const registerMutation = (email: string, password: string) => `
-mutation {
-  register(email: "${email}", password: "${password}"){
-    path
-    message
-  }
-}
-`
+
+const testClient = new TestClient(process.env.TEST_HOST as string);
 
 describe("testing registration mutation", () => {
   const email = "register@test.com";
   const password = "registerTestPassword";
   it('registering a user returns correct response', async () => {
-    const response = await request(process.env.TEST_HOST as string, registerMutation(email, password));
-    expect(response).toEqual({ register: null });
+    const response = await testClient.registerClient(email, password);
     const users = await User.find({ where: { email } });
     expect(users).toHaveLength(1);
     const user = users[0];
@@ -36,31 +29,31 @@ describe("testing registration mutation", () => {
     expect(user.password).not.toEqual(password);
   })
   it('registering the same user twice returns incorrect response', async () => {
-    const response = await request(process.env.TEST_HOST as string, registerMutation(email, password));
-    expect(response.register).toHaveLength(1);
-    expect(response.register[0]).toEqual({
+    const response = await testClient.registerClient(email, password);
+    expect(response.data.register).toHaveLength(1);
+    expect(response.data.register[0]).toEqual({
       path: 'email',
       message: duplicateEmail
     });
   });
   it('registering a user with invalid email returns inccorrect response', async () => {
-    const response = await request(process.env.TEST_HOST as string, registerMutation("an", password));
-    expect(response.register).toHaveLength(2);
-    expect(response).toEqual({
+    const response = await testClient.registerClient("an", password);
+    expect(response.data.register).toHaveLength(2);
+    expect(response.data).toEqual({
       register: [{ "message": emailNotLongEnough, "path": "email" }, { "message": invalidEmail, "path": "email" }]
     })
   })
   it('registering a user with invalid password returns inccorrect response', async () => {
-    const response = await request(process.env.TEST_HOST as string, registerMutation(email, "an"));
-    expect(response.register).toHaveLength(1);
-    expect(response).toEqual({
+    const response = await testClient.registerClient(email, "an");
+    expect(response.data.register).toHaveLength(1);
+    expect(response.data).toEqual({
       register: [{ "path": "password", "message": passwordNotLongEnough }]
     })
   })
   it('registering a user with invalid email and invalid password returns inccorrect response', async () => {
-    const response = await request(process.env.TEST_HOST as string, registerMutation("an", "an"));
-    expect(response.register).toHaveLength(3);
-    expect(response).toEqual({
+    const response = await testClient.registerClient("an", "an");
+    expect(response.data.register).toHaveLength(3);
+    expect(response.data).toEqual({
       register: [{ "message": emailNotLongEnough, "path": "email" }, { "message": invalidEmail, "path": "email" }, { "path": "password", "message": passwordNotLongEnough }]
     })
   })
