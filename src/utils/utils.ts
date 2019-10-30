@@ -1,3 +1,4 @@
+import { request } from 'graphql-request';
 import { GraphQlMiddleware, Resolver } from './../types/graphql-utils';
 import { v4 } from "uuid";
 import { Redis } from "ioredis";
@@ -55,7 +56,7 @@ export const middleWare = async (
   info: any
 ) => {
   //user not logged in
-  if (!context.session || !context.session.userId) {
+  if (!context.req || !context.req.session.userId) {
     return null;
   }
   const response = await resolver(parent, args, context, info);

@@ -1,3 +1,4 @@
+import { USER_SESSION_ID_PREFIX } from './../../utils/constants';
 import { invalidLogin, emailConfirmError } from './errorMessages';
 import { invalidEmail } from './../../utils/commonErrors';
 import { User } from '../../entity/User';
@@ -27,8 +28,12 @@ export const resolvers: ResolverMap = {
     login: async (
       _,
       args: GQL.ILoginOnMutationArguments,
-      { session }
+      {
+        req,
+        redis
+      }
     ) => {
+      const { session } = req;
       try {
         await validSchema.validate(args, { abortEarly: false })
       } catch (err) {
@@ -47,6 +52,9 @@ export const resolvers: ResolverMap = {
       const valid = await bcrypt.compare(password, user.password);
       if (!valid) return errorResponse(invalidLogin);
       session.userId = user.id;
+      if (req.sessionID) {
+        redis.lpush(`${USER_SESSION_ID_PREFIX}${user.id}`, req.sessionID)
+      }
       return null;
     }
   }

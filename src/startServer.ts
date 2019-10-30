@@ -1,3 +1,5 @@
+import { Request } from 'node-fetch';
+import { REDIS_SESSION_PREFIX } from './utils/constants';
 import { confirmEmail } from './routes/confirmEmail';
 import { Redis } from 'ioredis';
 import { redisInstance } from './redis_utility';
@@ -8,6 +10,7 @@ import * as session from 'express-session';
 import * as connectRedis from 'connect-redis';
 import 'dotenv/config';
 import "reflect-metadata";
+import { expression } from '@babel/template';
 
 const SESSION_SECRET = process.env.SESSION_SECRET;
 const RedisStore = connectRedis(session);
@@ -19,7 +22,7 @@ export const startServer = async () => {
     context: ({ request }) =>({
         redis,
         url: request.protocol + "://" + request.get('host'),
-        session: request.session
+        req: request
       })
   });
   server.express.use(
@@ -35,7 +38,8 @@ export const startServer = async () => {
     session({
       name: "qid",
       store: new RedisStore({
-        client: redis as any
+        client: redis as any,
+        prefix: REDIS_SESSION_PREFIX
       }),
       secret: SESSION_SECRET,
       resave: false,

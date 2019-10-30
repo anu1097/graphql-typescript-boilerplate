@@ -6,8 +6,9 @@ import { ResolverMap } from '../../types/graphql-utils';
 
 export const resolvers: ResolverMap = {
   Query: {
-    me: createMiddleWare(middleWare, (_, __, { session }) =>
-      User.findOne({ where: { id: session.userId } })
-    )
+    me: createMiddleWare(middleWare, (_, __, { req }) => {
+      const { session } = req;
+      return User.findOne({ where: { id: session.userId } })
+    })
   }
 }
