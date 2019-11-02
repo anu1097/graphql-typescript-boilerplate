@@ -1,4 +1,3 @@
-import { request } from 'graphql-request';
 import { GraphQlMiddleware, Resolver } from './../types/graphql-utils';
 import { v4 } from "uuid";
 import { Redis } from "ioredis";
@@ -6,9 +5,9 @@ import { getConnectionOptions, createConnection } from "typeorm"
 import { importSchema } from 'graphql-import';
 import { makeExecutableSchema, mergeSchemas } from 'graphql-tools';
 import { GraphQLSchema } from 'graphql';
+import { FORGOT_PASSWORD_PREFIX, USER_SESSION_ID_PREFIX, REDIS_SESSION_PREFIX } from './constants';
 import * as path from 'path';
 import * as fs from 'fs';
-import { FORGOT_PASSWORD_PREFIX } from './constants';
 
 export const getPort = (): number => process.env.NODE_ENV === 'test' ? 4001 : 4000;
 
@@ -29,6 +28,16 @@ export const createTypeormConnection = async () => {
   return createConnection({
     ...connectionOptions, name: "default"
   });
+}
+
+export const removeAllUsersSession = async (userId: string, redis: Redis) => {
+  const sessionIds = await redis.lrange(`${USER_SESSION_ID_PREFIX}${userId}`, 0, -1)
+
+  const promises = [];
+  sessionIds.forEach(sessionId => {
+    promises.push(redis.del(`${REDIS_SESSION_PREFIX}${sessionId}`));
+  });
+  await Promise.all(promises);
 }
 
 export const generateMergedSchema = () => {

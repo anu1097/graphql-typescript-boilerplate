@@ -1,6 +1,7 @@
+import { registerEmailSchema, registerPasswordSchema } from './../../utils/yupSchemas';
 import { USER_SESSION_ID_PREFIX } from './../../utils/constants';
-import { invalidLogin, emailConfirmError } from './errorMessages';
-import { invalidEmail } from './../../utils/commonErrors';
+import { invalidLogin, emailConfirmError, accountLockedError } from './errorMessages';
+import { INVALID_EMAIL } from './../../utils/commonErrors';
 import { User } from '../../entity/User';
 import * as bcrypt from 'bcrypt';
 import { ResolverMap } from '../../types/graphql-utils';
@@ -8,9 +9,9 @@ import * as yup from 'yup';
 import { formatYupError } from '../../utils/formatYupError';
 import { GQL } from '../../types/schema';
 
-const validSchema = yup.object().shape({
-  email: yup.string().min(3).max(255).email(invalidEmail),
-  password: yup.string().min(3).max(255)
+const validateSchema = yup.object().shape({
+  email: registerEmailSchema,
+  password: registerPasswordSchema
 })
 
 const errorResponse = (errorResponse) => {
@@ -35,7 +36,7 @@ export const resolvers: ResolverMap = {
     ) => {
       const { session } = req;
       try {
-        await validSchema.validate(args, { abortEarly: false })
+        await validateSchema.validate(args, { abortEarly: false })
       } catch (err) {
         return formatYupError(err);
       }
@@ -49,7 +50,12 @@ export const resolvers: ResolverMap = {
       if (!user.confirmed) {
         return errorResponse(emailConfirmError)
       }
+      if (user.lockedAccount) {
+        return errorResponse(accountLockedError)
+      }
       const valid = await bcrypt.compare(password, user.password);
+      // console.log(password);
+      // console.log(valid);
       if (!valid) return errorResponse(invalidLogin);
       session.userId = user.id;
       if (req.sessionID) {
@@ -58,4 +64,4 @@ export const resolvers: ResolverMap = {
       return null;
     }
   }
-}
+} 

@@ -43,7 +43,7 @@ email: string;
 interface IMutation {
 __typename: "Mutation";
 sendForgotPasswordLink: boolean | null;
-setNewPassword: Array<IError> | null;
+forgotPasswordChange: Array<IError> | null;
 login: Array<IError> | null;
 logout: boolean | null;
 register: Array<IError> | null;
@@ -53,7 +53,7 @@ interface ISendForgotPasswordLinkOnMutationArguments {
 email: string;
 }
 
-interface ISetNewPasswordOnMutationArguments {
+interface IForgotPasswordChangeOnMutationArguments {
 newPassword: string;
 key: string;
 }

@@ -1,4 +1,4 @@
-import { invalidEmail } from './../../utils/commonErrors';
+import { registerEmailSchema, registerPasswordSchema } from './../../utils/yupSchemas';
 import { User } from '../../entity/User';
 import { ResolverMap } from '../../types/graphql-utils';
 import * as yup from 'yup';
@@ -8,9 +8,9 @@ import { GQL } from '../../types/schema';
 import { createEmailConfirmationLink } from './../../utils/utils';
 import { sendConfirmationEmail } from '../../utils/sendConfirmationEmail';
 
-const validSchema = yup.object().shape({
-  email: yup.string().min(3).max(255).email(invalidEmail),
-  password: yup.string().min(3).max(255)
+const validateSchema = yup.object().shape({
+  email: registerEmailSchema,
+  password: registerPasswordSchema
 })
 
 export const resolvers: ResolverMap = {
@@ -21,7 +21,7 @@ export const resolvers: ResolverMap = {
     register: async (_,
       args: GQL.IRegisterOnMutationArguments, { redis, url }) => {
       try {
-        await validSchema.validate(args, { abortEarly: false })
+        await validateSchema.validate(args, { abortEarly: false })
       } catch (err) {
         return formatYupError(err);
       }

@@ -1,4 +1,5 @@
-import { passwordNotLongEnough } from './../../utils/commonErrors';
+import { removeAllUsersSession } from './../../utils/utils';
+import { PASSWORD_NOT_LONG_ENOUGH, EXPIRED_KEY_ERROR } from './../../utils/commonErrors';
 import { User } from '../../entity/User';
 import { request } from 'graphql-request';
 import { createTypeormConnection, createForgotPasswordLink } from '../../utils/utils';
@@ -6,12 +7,12 @@ import { Connection } from 'typeorm';
 import { TestClient } from '../../utils/testClientUtil';
 import * as Redis from 'ioredis';
 
-let loginTestConnection: Connection
+let forgotPasswordTestConnection: Connection
 let userId = '';
-const email = "forgotPassword@test.com";
-const password = "forgotPassword";
+const email = "test@test.com";
+const password = "testpassword";
 beforeAll(async () => {
-  loginTestConnection = await createTypeormConnection();
+  forgotPasswordTestConnection = await createTypeormConnection();
   const user = await User.create({
     email,
     password,
@@ -21,7 +22,7 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  loginTestConnection.close();
+  forgotPasswordTestConnection.close();
 })
 
 const testClient = new TestClient(process.env.TEST_HOST as string);
@@ -39,31 +40,43 @@ describe("forgot password test", () => {
     const user = await User.findOne({
       where: { email },
     })
-    const url = await createForgotPasswordLink('', email, redis);
 
+    await removeAllUsersSession(user.id, redis);
     //user should be logged out now
-    const response = await testClient.meClient();
-    expect(response).toEqual({
-      me: null
+    expect(await testClient.meClient()).toEqual({
+      data: {
+        me: null
+      }
     });
 
-    const key = url;
-    const response2 = await testClient.forgotPasswordChange('a', key);
-    expect(response2).toEqual({
+    const url = await createForgotPasswordLink('', user.id, redis);
+    const paredData = url.split('/');
+    const key = paredData[paredData.length - 1];
+    expect(await testClient.forgotPasswordChange('a', key)).toEqual({
       data: {
-        setNewPassword: {
-          path: 'newPassword',
-          message: passwordNotLongEnough
+        forgotPasswordChange: [
+          {
+            path: 'newPassword',
+            message: PASSWORD_NOT_LONG_ENOUGH
+          }
+        ]
+      }
+    });
+    expect((await testClient.forgotPasswordChange(newPassword, key)).data).toEqual({
+      forgotPasswordChange: null
+    });
+    expect((await testClient.forgotPasswordChange('asdasdasdas', key)).data).toEqual({
+      forgotPasswordChange: [
+        {
+          path: "key",
+          message: EXPIRED_KEY_ERROR
         }
-      }
+      ]
     });
-
-    const response3 = await testClient.forgotPasswordChange(newPassword, key);
-    expect(response3).toEqual({
+    expect(await testClient.loginClient(email, newPassword)).toEqual({
       data: {
-        setNewPassword: null
+        login: null
       }
-    });
-
+    })
   })
 }) 
