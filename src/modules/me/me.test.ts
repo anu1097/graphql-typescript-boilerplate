@@ -1,9 +1,9 @@
-import { TestClient } from './../../utils/utils';
 import { User } from './../../entity/User';
 import { request } from 'graphql-request';
 import { createTypeormConnection } from '../../utils/utils';
 import { Connection } from 'typeorm';
 import axios from 'axios';
+import { TestClient } from '../../utils/testClientUtil';
 
 let meTestConnection: Connection
 let userId = '';

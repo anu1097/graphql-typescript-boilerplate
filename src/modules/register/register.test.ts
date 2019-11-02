@@ -1,9 +1,10 @@
 import { emailNotLongEnough, invalidEmail, passwordNotLongEnough } from './../../utils/commonErrors';
-import { createTypeormConnection, TestClient } from './../../utils/utils';
+import { createTypeormConnection } from './../../utils/utils';
 import { User } from '../../entity/User';
 import { request } from 'graphql-request'
 import { duplicateEmail } from './errorMessages';
 import { Connection } from 'typeorm';
+import { TestClient } from '../../utils/testClientUtil';
 
 let registerTestConnection: Connection
 
