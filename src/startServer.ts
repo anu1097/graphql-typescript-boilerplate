@@ -1,4 +1,3 @@
-import { Request } from 'node-fetch';
 import { REDIS_SESSION_PREFIX } from './utils/constants';
 import { confirmEmail } from './routes/confirmEmail';
 import { Redis } from 'ioredis';
@@ -10,7 +9,8 @@ import * as session from 'express-session';
 import * as connectRedis from 'connect-redis';
 import 'dotenv/config';
 import "reflect-metadata";
-import { expression } from '@babel/template';
+import * as RateLimit from 'express-rate-limit';
+import * as RedisStoreProvider from 'rate-limit-redis';
 
 const SESSION_SECRET = process.env.SESSION_SECRET;
 const RedisStore = connectRedis(session);
@@ -25,6 +25,17 @@ export const startServer = async () => {
         req: request
       })
   });
+  
+  //  apply to all requests
+  server.express.use(
+    new RateLimit({
+      store: new RedisStoreProvider({
+        client: redisInstance
+      }),
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      max: 100, // limit each IP to 100 requests per windowMs
+    })
+  );
   server.express.use(
     function(req, res, next) {
       res.header('Content-Type', 'application/json;charset=UTF-8')
