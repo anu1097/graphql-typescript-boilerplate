@@ -30,6 +30,16 @@ export const createTypeormConnection = async () => {
   });
 }
 
+export const createTestConnection = async (resetDB: boolean = false) => {
+  const connectionOptions = await getConnectionOptions(process.env.NODE_ENV);
+  return createConnection({
+    ...connectionOptions, 
+    name: "default",
+    synchronize: resetDB,
+    dropSchema: resetDB
+  });
+}
+
 export const removeAllUsersSession = async (userId: string, redis: Redis) => {
   const sessionIds = await redis.lrange(`${USER_SESSION_ID_PREFIX}${userId}`, 0, -1)
 

@@ -3,6 +3,7 @@ import { invalidLogin, emailConfirmError } from './errorMessages';
 import { createTypeormConnection} from '../../../utils/utils';
 import { Connection } from 'typeorm';
 import { TestClient } from '../../../utils/testClientUtil';
+import * as faker from 'faker';
 
 let loginTestConnection: Connection
 beforeAll(async () => {
@@ -25,8 +26,8 @@ test("tests logging in an invalid user should return invalid Login error", async
 })
 
 describe("testing login mutation for a valid user", () => {
-  const email = "loging@test.com";
-  const password = "logingTestPassword";
+  const email = faker.internet.email();
+  const password = faker.internet.password();
   it("with unconfirmed email", async () => {
     await testClient.registerClient(email, password);
     const user = await User.findOne({

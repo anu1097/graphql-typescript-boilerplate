@@ -2,8 +2,11 @@ import { REDIS_SESSION_PREFIX } from './utils/constants';
 import { confirmEmail } from './routes/confirmEmail';
 import { Redis } from 'ioredis';
 import { redisInstance } from './redis_utility';
-import { getPort, generateMergedSchema } from './utils/utils';
-import { createTypeormConnection } from './utils/utils';
+import {
+  getPort,
+  generateMergedSchema,
+  createTypeormConnection
+} from './utils/utils';
 import { GraphQLServer } from 'graphql-yoga';
 import * as session from 'express-session';
 import * as connectRedis from 'connect-redis';
@@ -16,16 +19,19 @@ const SESSION_SECRET = process.env.SESSION_SECRET;
 const RedisStore = connectRedis(session);
 
 export const startServer = async () => {
+  if (process.env.NODE_ENV === 'test') {
+    await redisInstance.flushall()
+  }
   const redis: Redis = redisInstance;
   const server = new GraphQLServer({
     schema: generateMergedSchema(),
-    context: ({ request }) =>({
-        redis,
-        url: request.protocol + "://" + request.get('host'),
-        req: request
-      })
+    context: ({ request }) => ({
+      redis,
+      url: request.protocol + "://" + request.get('host'),
+      req: request
+    })
   });
-  
+
   //  apply to all requests
   server.express.use(
     new RateLimit({
@@ -37,7 +43,7 @@ export const startServer = async () => {
     })
   );
   server.express.use(
-    function(req, res, next) {
+    function (req, res, next) {
       res.header('Content-Type', 'application/json;charset=UTF-8')
       res.header('Access-Control-Allow-Credentials')
       res.header(

@@ -1,16 +1,16 @@
 import { removeAllUsersSession } from '../../../utils/utils';
 import { PASSWORD_NOT_LONG_ENOUGH, EXPIRED_KEY_ERROR } from '../../../utils/commonErrors';
 import { User } from '../../../entity/User';
-import { request } from 'graphql-request';
 import { createTypeormConnection, createForgotPasswordLink } from '../../../utils/utils';
 import { Connection } from 'typeorm';
 import { TestClient } from '../../../utils/testClientUtil';
 import * as Redis from 'ioredis';
+import * as faker from 'faker';
 
 let forgotPasswordTestConnection: Connection
 let userId = '';
-const email = "test@test.com";
-const password = "testpassword";
+const email = faker.internet.email();
+const password = faker.internet.password();
 beforeAll(async () => {
   forgotPasswordTestConnection = await createTypeormConnection();
   const user = await User.create({

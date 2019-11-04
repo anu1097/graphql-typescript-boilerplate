@@ -4,6 +4,7 @@ import { User } from '../../../entity/User';
 import { duplicateEmail } from './errorMessages';
 import { Connection } from 'typeorm';
 import { TestClient } from '../../../utils/testClientUtil';
+import * as faker from 'faker';
 
 let registerTestConnection: Connection
 
@@ -18,8 +19,8 @@ afterAll(async () => {
 const testClient = new TestClient(process.env.TEST_HOST as string);
 
 describe("testing registration mutation", () => {
-  const email = "register@test.com";
-  const password = "registerTestPassword";
+  const email = faker.internet.email();
+  const password = faker.internet.password();
   it('registering a user returns correct response', async () => {
     const response = await testClient.registerClient(email, password);
     const users = await User.find({ where: { email } });

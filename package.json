@@ -1,12 +1,13 @@
 {
-   "name": "new-typeorm-project",
+   "name": "server-boilerplate",
    "version": "0.0.1",
-   "description": "Awesome project developed with TypeORM.",
+   "description": "Awesome project developed with TypeORM and Graphql",
    "devDependencies": {
       "@types/bcrypt": "^3.0.0",
       "@types/connect-redis": "^0.0.11",
       "@types/express-rate-limit": "^3.3.3",
       "@types/express-session": "^1.15.15",
+      "@types/faker": "^4.1.7",
       "@types/ioredis": "^4.0.18",
       "@types/jest": "^24.0.21",
       "@types/node": "^12.12.5",
@@ -33,6 +34,7 @@
       "dotenv": "^8.2.0",
       "express-rate-limit": "^5.0.0",
       "express-session": "^1.17.0",
+      "faker": "^4.1.0",
       "graphql-import": "^0.7.1",
       "graphql-request": "^1.8.2",
       "graphql-yoga": "^1.18.3",
@@ -57,7 +59,7 @@
    },
    "jest": {
       "preset": "ts-jest",
-      "globalSetup": "./src/testSetup/callSetup.js",
+      "globalSetup": "./src/testUtils/callSetup.js",
       "transform": {
          "^.+\\.tsx?$": "ts-jest"
       },
