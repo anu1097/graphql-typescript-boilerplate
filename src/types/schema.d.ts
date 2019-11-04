@@ -22,16 +22,7 @@ column: number;
 
 interface IQuery {
 __typename: "Query";
-dummy: string | null;
-bye2: string | null;
-hi: string | null;
 me: IUser | null;
-bye: string | null;
-hello: string | null;
-}
-
-interface IHelloOnQueryArguments {
-name?: string | null;
 }
 
 interface IUser {

@@ -1,12 +1,12 @@
-import { formatYupError } from './../../utils/formatYupError';
-import { EXPIRED_KEY_ERROR } from './../../utils/commonErrors';
-import { removeAllUsersSession, createForgotPasswordLink } from './../../utils/utils';
+import { formatYupError } from '../../../utils/formatYupError';
+import { EXPIRED_KEY_ERROR } from '../../../utils/commonErrors';
+import { removeAllUsersSession, createForgotPasswordLink } from '../../../utils/utils';
 import { USER_NOT_FOUND } from './errorMessages';
-import { User } from './../../entity/User';
-import { registerPasswordSchema } from './../../utils/yupSchemas';
-import { ResolverMap } from '../../types/graphql-utils';
-import { FORGOT_PASSWORD_PREFIX } from '../../utils/constants';
-import { GQL } from '../../types/schema';
+import { User } from '../../../entity/User';
+import { registerPasswordSchema } from '../../../utils/yupSchemas';
+import { ResolverMap } from '../../../types/graphql-utils';
+import { FORGOT_PASSWORD_PREFIX } from '../../../utils/constants';
+import { GQL } from '../../../types/schema';
 import * as yup from 'yup';
 import * as bcrypt from 'bcrypt';
 
@@ -15,9 +15,6 @@ const validateSchema = yup.object().shape({
 })
 
 export const resolvers: ResolverMap = {
-  Query: {
-    dummy: () => "dummy Query 1"
-  },
   Mutation: {
     sendForgotPasswordLink: async (_, { email }: GQL.ISendForgotPasswordLinkOnMutationArguments, { redis }) => {
       const user = await User.findOne({

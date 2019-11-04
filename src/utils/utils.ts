@@ -2,12 +2,12 @@ import { GraphQlMiddleware, Resolver } from './../types/graphql-utils';
 import { v4 } from "uuid";
 import { Redis } from "ioredis";
 import { getConnectionOptions, createConnection } from "typeorm"
-import { importSchema } from 'graphql-import';
-import { makeExecutableSchema, mergeSchemas } from 'graphql-tools';
-import { GraphQLSchema } from 'graphql';
+import { makeExecutableSchema } from 'graphql-tools';
 import { FORGOT_PASSWORD_PREFIX, USER_SESSION_ID_PREFIX, REDIS_SESSION_PREFIX } from './constants';
 import * as path from 'path';
 import * as fs from 'fs';
+import { mergeTypes, mergeResolvers } from "merge-graphql-schemas";
+import * as glob from "glob";
 
 export const getPort = (): number => process.env.NODE_ENV === 'test' ? 4001 : 4000;
 
@@ -19,7 +19,7 @@ export const createEmailConfirmationLink = async (url: string, userId: string, r
 
 export const createForgotPasswordLink = async (url: string, userId: string, redis: Redis) => {
   const uuid = v4();
-  await redis.set(`${FORGOT_PASSWORD_PREFIX}${uuid}`, userId, "ex", 20 * 60 );
+  await redis.set(`${FORGOT_PASSWORD_PREFIX}${uuid}`, userId, "ex", 20 * 60);
   return `${url}/change-password/${uuid}`;
 }
 
@@ -41,14 +41,18 @@ export const removeAllUsersSession = async (userId: string, redis: Redis) => {
 }
 
 export const generateMergedSchema = () => {
-  const schemas: GraphQLSchema[] = [];
-  const folders = fs.readdirSync(path.join(__dirname + "/../modules"));
-  folders.forEach((folder) => {
-    const { resolvers } = require(`../modules/${folder}/resolvers`);
-    const typeDefs = importSchema(path.join(__dirname + `/../modules/${folder}/schema.graphql`));
-    schemas.push(makeExecutableSchema({ resolvers, typeDefs }));
-  })
-  return mergeSchemas({ schemas })
+  const pathToModules = path.join(__dirname, "../modules");
+  const graphqlTypes = glob
+    .sync(`${pathToModules}/**/*.graphql`)
+    .map(x => fs.readFileSync(x, { encoding: "utf8" }));
+
+  const resolvers = glob
+    .sync(`${pathToModules}/**/resolvers.?s`)
+    .map(resolver => require(resolver).resolvers);
+  return makeExecutableSchema({
+    typeDefs: mergeTypes(graphqlTypes),
+    resolvers: mergeResolvers(resolvers)
+  });
 }
 
 export const createMiddleWare = (

@@ -1,8 +1,8 @@
-import { User } from './../../entity/User';
+import { User } from '../../../entity/User';
 import { invalidLogin, emailConfirmError } from './errorMessages';
-import { createTypeormConnection} from './../../utils/utils';
+import { createTypeormConnection} from '../../../utils/utils';
 import { Connection } from 'typeorm';
-import { TestClient } from '../../utils/testClientUtil';
+import { TestClient } from '../../../utils/testClientUtil';
 
 let loginTestConnection: Connection
 beforeAll(async () => {

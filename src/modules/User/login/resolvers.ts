@@ -1,13 +1,13 @@
-import { registerEmailSchema, registerPasswordSchema } from './../../utils/yupSchemas';
-import { USER_SESSION_ID_PREFIX } from './../../utils/constants';
+import { registerEmailSchema, registerPasswordSchema } from '../../../utils/yupSchemas';
+import { USER_SESSION_ID_PREFIX } from '../../../utils/constants';
 import { invalidLogin, emailConfirmError, accountLockedError } from './errorMessages';
-import { INVALID_EMAIL } from './../../utils/commonErrors';
-import { User } from '../../entity/User';
+import { INVALID_EMAIL } from '../../../utils/commonErrors';
+import { User } from '../../../entity/User';
 import * as bcrypt from 'bcrypt';
-import { ResolverMap } from '../../types/graphql-utils';
+import { ResolverMap } from '../../../types/graphql-utils';
 import * as yup from 'yup';
-import { formatYupError } from '../../utils/formatYupError';
-import { GQL } from '../../types/schema';
+import { formatYupError } from '../../../utils/formatYupError';
+import { GQL } from '../../../types/schema';
 
 const validateSchema = yup.object().shape({
   email: registerEmailSchema,
@@ -22,9 +22,6 @@ const errorResponse = (errorResponse) => {
 }
 
 export const resolvers: ResolverMap = {
-  Query: {
-    bye2: () => "bye"
-  },
   Mutation: {
     login: async (
       _,

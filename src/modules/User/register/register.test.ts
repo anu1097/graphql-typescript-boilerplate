@@ -1,9 +1,9 @@
-import { EMAIL_NOT_LONG_ENOUGH, INVALID_EMAIL, PASSWORD_NOT_LONG_ENOUGH } from './../../utils/commonErrors';
-import { createTypeormConnection } from './../../utils/utils';
-import { User } from '../../entity/User';
+import { EMAIL_NOT_LONG_ENOUGH, INVALID_EMAIL, PASSWORD_NOT_LONG_ENOUGH } from '../../../utils/commonErrors';
+import { createTypeormConnection } from '../../../utils/utils';
+import { User } from '../../../entity/User';
 import { duplicateEmail } from './errorMessages';
 import { Connection } from 'typeorm';
-import { TestClient } from '../../utils/testClientUtil';
+import { TestClient } from '../../../utils/testClientUtil';
 
 let registerTestConnection: Connection
 

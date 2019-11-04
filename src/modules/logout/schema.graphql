@@ -1,9 +1,0 @@
-# import Error from "../../shared.graphql"
-
-type Query{
-  hi: String
-}
-
-type Mutation{
-  logout: Boolean
-}

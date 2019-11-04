@@ -1,10 +1,10 @@
-import { removeAllUsersSession } from './../../utils/utils';
-import { PASSWORD_NOT_LONG_ENOUGH, EXPIRED_KEY_ERROR } from './../../utils/commonErrors';
-import { User } from '../../entity/User';
+import { removeAllUsersSession } from '../../../utils/utils';
+import { PASSWORD_NOT_LONG_ENOUGH, EXPIRED_KEY_ERROR } from '../../../utils/commonErrors';
+import { User } from '../../../entity/User';
 import { request } from 'graphql-request';
-import { createTypeormConnection, createForgotPasswordLink } from '../../utils/utils';
+import { createTypeormConnection, createForgotPasswordLink } from '../../../utils/utils';
 import { Connection } from 'typeorm';
-import { TestClient } from '../../utils/testClientUtil';
+import { TestClient } from '../../../utils/testClientUtil';
 import * as Redis from 'ioredis';
 
 let forgotPasswordTestConnection: Connection
